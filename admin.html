@@ -2,70 +2,57 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Admin Login</title>
-  
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    #postForm { display: none; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel - Akash's NEET Journey</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
 </head>
-<body>
-  <header>
-    <h1>🔐 Admin Panel</h1>
-    <a href="index.html">← Back to Home</a>
-  </header>
+<body class="bg-gray-100 text-gray-900 p-4">
+  <div id="loginForm" class="max-w-md mx-auto mt-24 bg-white shadow p-6 rounded">
+    <h2 class="text-xl font-bold mb-4">Admin Login</h2>
+    <input id="adminPass" type="password" placeholder="Enter admin password" class="w-full border p-2 mb-4" />
+    <button onclick="checkPassword()" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Login</button>
+    <p id="loginError" class="text-red-600 mt-2 hidden">Wrong password. Try again.</p>
+  </div>
 
-  <main>
-    <div id="loginForm">
-      <p>Enter admin password to add a post:</p>
-      <input type="password" id="password" placeholder="Enter password" />
-      <button onclick="checkPassword()">Login</button>
-      <p id="loginStatus"></p>
-    </div>
-
-    <form id="postForm">
-      <label>Post Title:</label><br/>
-      <input type="text" id="title" required><br/><br/>
-
-      <label>Post Content:</label><br/>
-      <textarea id="content" rows="6" required></textarea><br/><br/>
-
-      <button type="submit">Add Post</button>
-      <p id="status"></p>
-    </form>
-  </main>
+  <div id="postForm" class="max-w-xl mx-auto mt-10 bg-white shadow p-6 rounded hidden">
+    <h2 class="text-2xl font-bold mb-4">Post New Update</h2>
+    <input id="postTitle" type="text" placeholder="Post title" class="w-full border p-2 mb-4" required />
+    <textarea id="postContent" placeholder="Post content" rows="6" class="w-full border p-2 mb-4" required></textarea>
+    <button onclick="submitPost()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Submit</button>
+    <p id="postStatus" class="mt-4 text-green-600 hidden">✅ Post added successfully!</p>
+  </div>
 
   <script>
-    const correctPassword = "akash123"; // 🔑 Change this password
+    const ADMIN_PASSWORD = "akash123"; // 🔐 Change this to your own password
 
     function checkPassword() {
-      const input = document.getElementById("password").value;
-      if (input === correctPassword) {
-        document.getElementById("loginForm").style.display = "none";
-        document.getElementById("postForm").style.display = "block";
+      const input = document.getElementById("adminPass").value;
+      if (input === ADMIN_PASSWORD) {
+        document.getElementById("loginForm").classList.add("hidden");
+        document.getElementById("postForm").classList.remove("hidden");
       } else {
-        document.getElementById("loginStatus").textContent = "❌ Wrong password!";
+        document.getElementById("loginError").classList.remove("hidden");
       }
     }
 
-    document.getElementById("postForm").addEventListener("submit", async function(e) {
-      e.preventDefault();
-      const title = document.getElementById("title").value;
-      const content = document.getElementById("content").value;
+    async function submitPost() {
+      const title = document.getElementById("postTitle").value.trim();
+      const content = document.getElementById("postContent").value.trim();
+      if (!title || !content) return;
 
-      const res = await fetch("posts.json");
-      const posts = await res.json();
-      posts.unshift({ title, content, likes: 0, comments: [] });
+      await db.collection("posts").add({
+        title,
+        content,
+        timestamp: Date.now()
+      });
 
-      localStorage.setItem("posts", JSON.stringify(posts));
-      document.getElementById("status").textContent = "✅ Post saved locally!";
-      document.getElementById("title").value = "";
-      document.getElementById("content").value = "";
-    });
+      document.getElementById("postStatus").classList.remove("hidden");
+      document.getElementById("postTitle").value = "";
+      document.getElementById("postContent").value = "";
+    }
   </script>
-  <script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
-
 </body>
 </html>
