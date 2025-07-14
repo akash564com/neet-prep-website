@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Akash – NEET 2026 Journey</title>
+  <title>Admin Panel – Akash NEET 2026</title>
 
-  <!-- Tailwind CSS (CDN) -->
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -13,13 +13,13 @@
       theme: {
         extend: {
           colors: {
-            primary: '#2563eb', // blue-600
+            primary: '#2563eb',
             darkBg: '#0f172a',
             darkCard: '#1e293b'
           }
         }
       }
-    }
+    };
   </script>
 
   <!-- Firebase -->
@@ -31,126 +31,116 @@
   <!-- Styles -->
   <link rel="stylesheet" href="/style.css" />
 </head>
-<body class="bg-white text-gray-900 dark:bg-darkBg dark:text-white transition-all">
+<body class="bg-white dark:bg-darkBg text-gray-900 dark:text-white transition-all">
 
-  <!-- Header -->
-  <header class="bg-primary text-white shadow-md sticky top-0 z-50">
-    <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
-      <h1 class="text-xl font-bold">Akash's NEET 2026 Journey</h1>
-      <nav class="space-x-4 text-sm hidden sm:block">
-        <a href="#posts" class="hover:underline">Posts</a>
-        <a href="#donate" class="hover:underline">Donate</a>
-        <a href="#about" class="hover:underline">About</a>
-        <button id="toggleDark" class="ml-2 text-white text-sm px-2 py-1 bg-black bg-opacity-20 rounded hover:bg-opacity-40">
-          🌙
-        </button>
-        <button id="loginBtn" class="ml-2 bg-white text-primary px-2 py-1 rounded text-sm hidden">Login</button>
-        <button id="logoutBtn" class="ml-2 bg-white text-primary px-2 py-1 rounded text-sm hidden">Logout</button>
-      </nav>
+  <div class="max-w-2xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6">🛠️ Admin Panel</h1>
+
+    <div id="authSection" class="mb-6">
+      <button id="adminLogin" class="bg-blue-600 text-white px-4 py-2 rounded">Sign in with Google</button>
+      <p id="authMsg" class="text-sm mt-2 text-red-500 hidden">Access denied: you're not the admin.</p>
     </div>
-  </header>
-<main class="max-w-3xl mx-auto px-4 py-10">
-  <!-- Hero -->
-  <section class="text-center mb-12">
-    <h2 class="text-4xl font-bold mb-3">Welcome to My NEET 2026 Journey 👨‍⚕️</h2>
-    <p class="text-lg text-gray-700 dark:text-gray-300">
-      I'm <strong>Akash</strong>, preparing for NEET 2026. Follow my progress, support me, and drop your thoughts! 🚀
-    </p>
-  </section>
 
-  <!-- Posts -->
-  <section id="posts" class="mb-16">
-    <h3 class="text-2xl font-semibold mb-4">📝 Latest Updates</h3>
-    <div id="postsContainer" class="space-y-6">
-      <!-- Posts will load here from Firebase -->
+    <div id="adminPanel" class="hidden">
+      <!-- Post Form & Post List will appear here -->
+      <!-- 🔼 Add Post Form -->
+<div class="bg-white dark:bg-darkCard p-4 rounded shadow mb-6">
+  <h2 class="text-xl font-semibold mb-4">📢 Create New Post</h2>
+  <form id="postForm" class="space-y-4">
+    <input type="text" id="titleInput" placeholder="Post Title" required
+      class="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+    
+    <textarea id="contentInput" placeholder="Post Content" required
+      class="w-full px-3 py-2 border rounded h-32 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
+    
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+      ➕ Publish Post
+    </button>
+  </form>
+</div>
+
+<!-- 🗂️ Existing Posts -->
+<div class="bg-white dark:bg-darkCard p-4 rounded shadow">
+  <h2 class="text-xl font-semibold mb-4">📄 Existing Posts</h2>
+  <div id="adminPostsContainer" class="space-y-4">
+    <!-- Posts will be loaded here with delete buttons -->
+  </div>
+</div>
+
     </div>
-  </section>
-  <!-- Donate -->
-  <section id="donate" class="bg-yellow-100 dark:bg-yellow-300/10 p-6 rounded-lg shadow mb-16 text-center">
-    <h3 class="text-2xl font-semibold mb-2">🙏 Support My Journey</h3>
-    <p class="text-gray-700 dark:text-gray-200 mb-4">
-      Preparing for NEET is tough and takes time. If you'd like to support me, you can donate via UPI below.
-    </p>
-    <img src="/assets/upi-qr.png" alt="UPI QR" class="mx-auto w-40 h-40 border rounded mb-3" />
-    <p class="text-sm">Scan or use this UPI ID: <strong id="upiId">akashkalanspn564-1@okaxis</strong></p>
-    <button onclick="copyUpi()" class="mt-2 bg-blue-600 text-white px-3 py-1 rounded text-sm">📋 Copy UPI ID</button>
-  </section>
-  <!-- About -->
-  <section id="about" class="mb-16">
-    <h3 class="text-2xl font-semibold mb-2">🙋‍♂️ About Me</h3>
-    <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
-      I'm Akash, a passionate NEET 2026 aspirant. This site helps me stay accountable and share my learning journey
-      with others. I hope to inspire students like me, and your support means a lot. Stay focused, stay consistent! 💪
-    </p>
-  </section>
-</main>
-
-<!-- Footer -->
-<footer class="text-center text-sm py-6 text-gray-500 dark:text-gray-400">
-  &copy; 2025 Akash – NEET 2026 Journey. Built with ❤️ and Firebase.
-</footer>
+  </div>
 <script>
-  // 🔥 Firebase setup (from firebase-config.js)
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // 🌙 Dark Mode Toggle
-  const toggleBtn = document.getElementById("toggleDark");
-  if (localStorage.theme === "dark") document.documentElement.classList.add("dark");
-  toggleBtn.addEventListener("click", () => {
-    document.documentElement.classList.toggle("dark");
-    localStorage.theme = document.documentElement.classList.contains("dark") ? "dark" : "light";
-  });
+  const adminEmail = "akashkalanspn564@gmail.com"; // 🔐 Change this to YOUR Gmail
 
-  // 🔐 Google Login & Logout
-  const loginBtn = document.getElementById("loginBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
+  const loginBtn = document.getElementById("adminLogin");
+  const authMsg = document.getElementById("authMsg");
+  const authSection = document.getElementById("authSection");
+  const adminPanel = document.getElementById("adminPanel");
 
-  auth.onAuthStateChanged(user => {
-    if (user) {
-      loginBtn.classList.add("hidden");
-      logoutBtn.classList.remove("hidden");
-      console.log("Logged in as:", user.email);
-    } else {
-      loginBtn.classList.remove("hidden");
-      logoutBtn.classList.add("hidden");
-    }
-  });
-
+  // 🔐 Admin Auth
   loginBtn.addEventListener("click", () => {
     const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider);
+    auth.signInWithPopup(provider)
+      .then(result => {
+        if (result.user.email === adminEmail) {
+          authSection.classList.add("hidden");
+          adminPanel.classList.remove("hidden");
+          loadAdminPosts();
+        } else {
+          auth.signOut();
+          authMsg.classList.remove("hidden");
+        }
+      });
   });
 
-  logoutBtn.addEventListener("click", () => auth.signOut());
+  // ➕ Handle New Post Submit
+  const postForm = document.getElementById("postForm");
+  postForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const title = document.getElementById("titleInput").value.trim();
+    const content = document.getElementById("contentInput").value.trim();
 
-  // 🧠 Load Posts from Firestore
-  async function loadPosts() {
-    const container = document.getElementById("postsContainer");
-    container.innerHTML = "<p>Loading posts...</p>";
+    if (!title || !content) return alert("Fill both fields");
+
+    await db.collection("posts").add({
+      title,
+      content,
+      timestamp: Date.now()
+    });
+
+    postForm.reset();
+    loadAdminPosts();
+  });
+
+  // 🗑️ Load + Delete Posts
+  async function loadAdminPosts() {
+    const container = document.getElementById("adminPostsContainer");
+    container.innerHTML = "<p class='text-sm'>Loading...</p>";
 
     const snapshot = await db.collection("posts").orderBy("timestamp", "desc").get();
     container.innerHTML = "";
 
     snapshot.forEach(doc => {
       const post = doc.data();
-      const postDiv = document.createElement("div");
-      postDiv.className = "bg-white dark:bg-darkCard p-4 rounded shadow";
-      postDiv.innerHTML = `
-        <h4 class="text-xl font-bold mb-2">${post.title}</h4>
-        <p class="mb-2">${post.content}</p>
-        <p class="text-xs text-gray-500 dark:text-gray-400">🕒 ${new Date(post.timestamp).toLocaleString()}</p>
+      const div = document.createElement("div");
+      div.className = "p-3 border rounded dark:border-gray-600";
+      div.innerHTML = `
+        <h3 class="font-semibold">${post.title}</h3>
+        <p class="text-sm my-2">${post.content}</p>
+        <button onclick="deletePost('${doc.id}')" class="text-red-600 text-sm">🗑️ Delete</button>
       `;
-      container.appendChild(postDiv);
+      container.appendChild(div);
     });
   }
 
-  loadPosts();
-
-  // 📋 Copy UPI ID
-  function copyUpi() {
-    const upi = document.getElementById("upiId").innerText;
-    navigator.clipboard.writeText(upi).then(() => alert("UPI ID copied!"));
+  async function deletePost(id) {
+    if (confirm("Are you sure you want to delete this post?")) {
+      await db.collection("posts").doc(id).delete();
+      loadAdminPosts();
+    }
   }
 </script>
 </body>
