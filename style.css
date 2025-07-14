@@ -94,3 +94,70 @@ body.dark .text-gray-900 {
 body.dark .bg-gray-100 {
   background-color: #1a202c;
 }
+/* Smooth theme transitions */
+body {
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Dark mode classes (override Tailwind) */
+body.dark {
+  background-color: #111827;
+  color: #f3f4f6;
+}
+
+body.dark .bg-white {
+  background-color: #1f2937;
+}
+
+body.dark .text-gray-900 {
+  color: #f3f4f6;
+}
+
+body.dark .bg-gray-100 {
+  background-color: #374151;
+}
+
+body.dark .bg-yellow-100 {
+  background-color: #facc15;
+  color: #1f2937;
+}
+
+body.dark .bg-gray-200 {
+  background-color: #1f2937;
+}
+
+body.dark .border {
+  border-color: #4b5563;
+}
+
+/* Forms */
+input, textarea {
+  outline: none;
+  transition: border 0.2s;
+}
+
+input:focus, textarea:focus {
+  border-color: #3b82f6;
+}
+
+/* Buttons hover */
+button:hover {
+  opacity: 0.9;
+}
+
+/* Responsive spacing fix */
+@media (max-width: 640px) {
+  nav a {
+    display: inline-block;
+    margin: 0 0.5rem;
+  }
+
+  .container {
+    padding: 1rem;
+  }
+
+  footer {
+    font-size: 0.875rem;
+  }
+}
+
