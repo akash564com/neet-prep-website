@@ -89,6 +89,69 @@
 <footer class="text-center text-sm py-6 text-gray-500 dark:text-gray-400">
   &copy; 2025 Akash – NEET 2026 Journey. Built with ❤️ and Firebase.
 </footer>
+<script>
+  // 🔥 Firebase setup (from firebase-config.js)
+  const auth = firebase.auth();
+  const db = firebase.firestore();
 
+  // 🌙 Dark Mode Toggle
+  const toggleBtn = document.getElementById("toggleDark");
+  if (localStorage.theme === "dark") document.documentElement.classList.add("dark");
+  toggleBtn.addEventListener("click", () => {
+    document.documentElement.classList.toggle("dark");
+    localStorage.theme = document.documentElement.classList.contains("dark") ? "dark" : "light";
+  });
+
+  // 🔐 Google Login & Logout
+  const loginBtn = document.getElementById("loginBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      loginBtn.classList.add("hidden");
+      logoutBtn.classList.remove("hidden");
+      console.log("Logged in as:", user.email);
+    } else {
+      loginBtn.classList.remove("hidden");
+      logoutBtn.classList.add("hidden");
+    }
+  });
+
+  loginBtn.addEventListener("click", () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider);
+  });
+
+  logoutBtn.addEventListener("click", () => auth.signOut());
+
+  // 🧠 Load Posts from Firestore
+  async function loadPosts() {
+    const container = document.getElementById("postsContainer");
+    container.innerHTML = "<p>Loading posts...</p>";
+
+    const snapshot = await db.collection("posts").orderBy("timestamp", "desc").get();
+    container.innerHTML = "";
+
+    snapshot.forEach(doc => {
+      const post = doc.data();
+      const postDiv = document.createElement("div");
+      postDiv.className = "bg-white dark:bg-darkCard p-4 rounded shadow";
+      postDiv.innerHTML = `
+        <h4 class="text-xl font-bold mb-2">${post.title}</h4>
+        <p class="mb-2">${post.content}</p>
+        <p class="text-xs text-gray-500 dark:text-gray-400">🕒 ${new Date(post.timestamp).toLocaleString()}</p>
+      `;
+      container.appendChild(postDiv);
+    });
+  }
+
+  loadPosts();
+
+  // 📋 Copy UPI ID
+  function copyUpi() {
+    const upi = document.getElementById("upiId").innerText;
+    navigator.clipboard.writeText(upi).then(() => alert("UPI ID copied!"));
+  }
+</script>
 </body>
 </html>
