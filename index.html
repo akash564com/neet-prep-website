@@ -5,63 +5,80 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Akash's NEET 2026 Journey</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
 </head>
-<body class="bg-gray-100 text-gray-900">
-  <header class="bg-blue-600 text-white p-4 shadow">
-    <div class="container mx-auto flex justify-between items-center">
-      <h1 class="text-2xl font-bold">Akash's NEET Journey</h1>
-      <nav>
-      <a href="index.html">Home</a>
-      <a href="posts.html">My Updates</a>
-      <a href="donate.html">Donate Me</a>
-      </nav>
-    </div>
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white transition-colors">
+  <header class="bg-blue-600 text-white p-4 shadow flex justify-between items-center">
+    <h1 class="text-xl font-bold">Akash's NEET Journey</h1>
+    <nav class="space-x-4">
+      <a href="index.html" class="hover:underline">Home</a>
+      <a href="posts.html" class="hover:underline">Updates</a>
+      <a href="donate.html" class="hover:underline">Donate</a>
+      <button id="toggleDark" class="ml-2 px-2 py-1 bg-gray-200 text-black dark:bg-gray-700 dark:text-white rounded">🌙</button>
+    </nav>
   </header>
 
   <main class="container mx-auto p-4">
-    <!-- Hero -->
     <section class="text-center my-12">
       <h2 class="text-4xl font-bold mb-4">Welcome to My NEET 2026 Journey</h2>
-      <p class="text-lg max-w-2xl mx-auto">I’m Akash, preparing for NEET 2026. Follow my journey, get inspired, and support me if you can. Your motivation helps me stay strong!</p>
+      <p class="text-lg max-w-2xl mx-auto">I'm Akash, preparing for NEET 2026. Follow my journey, get inspired, and support me if you can!</p>
     </section>
 
     <!-- Posts -->
     <section id="posts" class="my-12">
       <h3 class="text-2xl font-semibold mb-4">Latest Updates</h3>
-      <div class="bg-white p-4 rounded shadow mb-6">
-        <h4 class="text-xl font-bold">Started Biology NCERT Class 11 📘</h4>
-        <p class="mt-2">Today I completed Chapter 1 of Biology. Taking notes and practicing MCQs regularly.</p>
-        <div class="mt-4 flex space-x-4 text-sm">
-          <button class="text-blue-600 hover:underline">❤️ Like</button>
-          <button class="text-blue-600 hover:underline">💬 Comment</button>
-          <button class="text-blue-600 hover:underline">🔗 Share</button>
-        </div>
-      </div>
-      <!-- More posts can be added here -->
+      <div id="postsContainer" class="space-y-6"></div>
     </section>
 
-    <!-- Donate -->
-    <section id="donate" class="my-12 bg-yellow-100 p-6 rounded shadow text-center">
+    <!-- Donate Section -->
+    <section class="my-12 bg-yellow-100 dark:bg-yellow-200 p-6 rounded shadow text-center">
       <h3 class="text-2xl font-semibold mb-2">Support My Journey 🙏</h3>
-      <p class="mb-4">If you’d like to support me with my NEET preparation, consider donating. Every small help is appreciated ❤️</p>
+      <p class="mb-4">If you’d like to support my NEET preparation, consider donating ❤️</p>
       <img src="assets/your-qr-code.jpg" alt="Donate QR" class="mx-auto w-48 h-48 border rounded" />
-      <p class="mt-2 text-sm">Scan the UPI QR or send via UPI ID: <strong>akashkalanspn564-1@okaxis</strong></p>
-    </section>
-        
-    <!-- About -->
-    <section id="about" class="my-12">
-      <h3 class="text-2xl font-semibold mb-2">About Me</h3>
-      <p>I’m Akash, a NEET 2026 aspirant. I’ve created this website to stay motivated, track my progress, and connect with others. Feel free to leave a comment or message of support!</p>
+      <p class="mt-2 text-sm">Send via UPI: <strong>akashkalanspn564-1@okaxis</strong></p>
     </section>
   </main>
 
-  <footer class="text-center p-4 bg-gray-200 mt-12">
+  <footer class="text-center p-4 bg-gray-200 dark:bg-gray-800 dark:text-white">
     <p>&copy; 2025 Akash | NEET 2026 Journey</p>
   </footer>
-  <script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
 
+  <script>
+    // 🌙 Dark Mode Toggle
+    const toggleBtn = document.getElementById("toggleDark");
+    const root = document.documentElement;
+
+    if (localStorage.theme === "dark") {
+      document.body.classList.add("dark");
+    }
+
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      localStorage.theme = document.body.classList.contains("dark") ? "dark" : "light";
+    });
+
+    // 🧠 Load posts from Firebase
+    async function loadPosts() {
+      const snapshot = await db.collection("posts").orderBy("timestamp", "desc").get();
+      const container = document.getElementById("postsContainer");
+      snapshot.forEach(doc => {
+        const post = doc.data();
+        const div = document.createElement("div");
+        div.className = "bg-white dark:bg-gray-800 p-4 rounded shadow";
+        div.innerHTML = `
+          <h4 class="text-xl font-bold">${post.title}</h4>
+          <p class="mt-2">${post.content}</p>
+          <div class="mt-4 text-sm text-gray-500 dark:text-gray-400">🕒 ${new Date(post.timestamp).toLocaleString()}</div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    loadPosts();
+  </script>
 </body>
 </html>
