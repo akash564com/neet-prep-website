@@ -1,23 +1,104 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>My NEET Updates</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Akash's NEET Journey - All Posts</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
+  <script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
 </head>
-<body>
-  <header>
-    <h1>My NEET 2026 Updates</h1>
-    <a href="index.html">← Back to Home</a>
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white transition-colors">
+  <header class="bg-blue-600 text-white p-4 shadow flex justify-between items-center">
+    <h1 class="text-xl font-bold">📚 My Journey Updates</h1>
+    <nav class="space-x-4">
+      <a href="index.html" class="hover:underline">Home</a>
+      <a href="admin.html" class="hover:underline">Admin</a>
+      <button id="toggleDark" class="ml-2 px-2 py-1 bg-gray-200 text-black dark:bg-gray-700 dark:text-white rounded">🌙</button>
+    </nav>
   </header>
 
-  <main id="posts">
-    <!-- Posts will be added here by JavaScript -->
+  <main class="container mx-auto p-4">
+    <section class="my-6">
+      <h2 class="text-2xl font-semibold mb-4">📅 All Posts</h2>
+      <div id="postsList" class="space-y-6"></div>
+    </section>
   </main>
-<script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.3.0/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
 
-  <script src="script.js"></script>
+  <footer class="text-center p-4 bg-gray-200 dark:bg-gray-800 dark:text-white mt-12">
+    <p>&copy; 2025 Akash | NEET 2026 Journey</p>
+  </footer>
+
+  <script>
+    // 🌙 Dark mode toggle
+    const toggleBtn = document.getElementById("toggleDark");
+    if (localStorage.theme === "dark") {
+      document.body.classList.add("dark");
+    }
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      localStorage.theme = document.body.classList.contains("dark") ? "dark" : "light";
+    });
+
+    // 🧠 Load all posts and their comments
+    async function loadPosts() {
+      const postsSnap = await db.collection("posts").orderBy("timestamp", "desc").get();
+      const container = document.getElementById("postsList");
+
+      postsSnap.forEach(async doc => {
+        const post = doc.data();
+        const postId = doc.id;
+
+        const div = document.createElement("div");
+        div.className = "bg-white dark:bg-gray-800 p-4 rounded shadow";
+
+        div.innerHTML = `
+          <h3 class="text-xl font-bold">${post.title}</h3>
+          <p class="mt-2">${post.content}</p>
+          <div class="mt-2 text-sm text-gray-500 dark:text-gray-400">🕒 ${new Date(post.timestamp).toLocaleString()}</div>
+
+          <div class="mt-4">
+            <h4 class="text-lg font-semibold mb-2">💬 Comments</h4>
+            <div id="comments-${postId}" class="space-y-2 mb-2 text-sm"></div>
+            <input type="text" id="input-${postId}" placeholder="Write a comment..." class="w-full border p-2 text-black rounded" />
+            <button onclick="submitComment('${postId}')" class="mt-2 bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Submit</button>
+          </div>
+        `;
+        container.appendChild(div);
+
+        loadComments(postId);
+      });
+    }
+
+    async function loadComments(postId) {
+      const commentsDiv = document.getElementById(`comments-${postId}`);
+      db.collection("posts").doc(postId).collection("comments").orderBy("timestamp")
+        .onSnapshot(snapshot => {
+          commentsDiv.innerHTML = "";
+          snapshot.forEach(doc => {
+            const c = doc.data();
+            const p = document.createElement("p");
+            p.innerHTML = `<span class="font-semibold">•</span> ${c.text}`;
+            commentsDiv.appendChild(p);
+          });
+        });
+    }
+
+    async function submitComment(postId) {
+      const input = document.getElementById(`input-${postId}`);
+      const text = input.value.trim();
+      if (!text) return;
+
+      await db.collection("posts").doc(postId).collection("comments").add({
+        text,
+        timestamp: Date.now()
+      });
+      input.value = "";
+    }
+
+    loadPosts();
+  </script>
 </body>
 </html>
