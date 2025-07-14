@@ -18,7 +18,11 @@
       <a href="index.html" class="hover:underline">Home</a>
       <a href="posts.html" class="hover:underline">Updates</a>
       <a href="donate.html" class="hover:underline">Donate</a>
-      <button id="toggleDark" class="ml-2 px-2 py-1 bg-gray-200 text-black dark:bg-gray-700 dark:text-white rounded">🌙</button>
+<button id="toggleDark" class="px-3 py-1 bg-gray-800 text-white rounded">
+  🌓 Toggle Dark
+</button>
+
+
     </nav>
   </header>
 
@@ -47,7 +51,8 @@
     <p>&copy; 2025 Akash | NEET 2026 Journey</p>
   </footer>
 
-  <script>
+<script>
+  window.onload = () => {
     // 🌙 Dark Mode Toggle
     const toggleBtn = document.getElementById("toggleDark");
     const root = document.documentElement;
@@ -79,7 +84,9 @@
     }
 
     loadPosts();
-  </script>
+  };
+</script>
+
   <script>
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("service-worker.js")
